@@ -2,6 +2,7 @@
 
 Code:
 
+- All analyses were run on R version 4.0.3 (see expgen_scripts.R for package details)
 - analysis.R - runs the models descibed in the paper
 - stimgenerator.R - generates stimuli for the experiments
 - expgen_scripts.R - all the functions required to do the above; includes list of required R packages (installed automatically on first run if required, when sourced from one of the above files)
