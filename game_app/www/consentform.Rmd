@@ -1,0 +1,45 @@
+---
+output: html_document
+theme: default
+---
+
+<style>
+.body {
+  background-color: black;
+}
+.main-container {
+  padding: 5px;
+  width: 460px;
+  text-align: justify;
+  text-justify: inter-word;
+  background-color: white;
+  color: black;
+}
+</style>
+
+## Information sheet for participants
+
+**Study title:**	Artificial language experiment <br>
+**Principal Investigator:**	[name] <br>
+**Researchers collecting data:** [name]
+
+**What is this document?** This document explains what kind of study we’re doing, what your rights are, and what will be done with your data. You can request a copy of this document for your records if you wish. 
+
+**Nature of the study.** You are about to participate in a study which involves playing a simple communication game with another participant where you will communicate using an artificial language. The experiment will consist of several rounds where you will take turns sending and receiving preset single-word messages. The number of times you successfully communicate a message will be recorded along with the messages. Your game should last around 30 minutes, depending on how fast you're playing. You will be given full instructions on the next screen.
+
+**Compensation.** You will be paid $6 for participation.	
+
+**Risks and benefits.**  There are no known risks to participation in this study. There no tangible benefits to you, however you will be contributing to our knowledge about communication.  
+
+**Confidentiality and use of data.** All the information we collect during the course of the research will be processed in accordance with Data Protection Law. In order to safeguard your privacy, we will never share personal information with anyone outside the research team. Your data will be referred to by a unique anonymous participant number only. We will store any personal data (MTurk IDs) using GDPR-compliant cloud storage services and on password-protected computers. The data (anonymised game log) collected during this study will be used for research purposes and may be shared with other researchers. Personal data is never publicly shared. 
+
+**What are my data protection rights?** The University of Edinburgh is a Data Controller for the information you provide.  You have the right to access information held about you. Your right of access can be exercised in accordance Data Protection Law. You also have other rights including rights of correction, erasure and objection.  For more details, including the right to lodge a complaint with the Information Commissioner’s Office, please visit www<!-- breaklink -->.ico.org.uk.  Questions, comments and requests about your personal data can also be sent to the University Data Protection Officer at [link]
+
+**Voluntary participation and right to withdraw.** Your participation is voluntary, and you may stop at any time and for any reason. If you wish to withdraw from the study during or after data gathering, we will delete your data and there is no penalty or loss of benefits to which you are otherwise entitled. 
+
+If you have any questions about what you've just read, please feel free to ask, or contact the experimenter (Andres) later by email at [email] This project has been approved by PPLS Ethics committee. If you have questions or comments regarding your rights as a participant, they can be contacted at [email].
+
+Thank you for your help! 
+
+<br>
+
