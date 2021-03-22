@@ -11,3 +11,5 @@ Data:
 
 - parsed_results_for_glmm.csv - precompiled tab-separated data (see paper for parsing details), load this in analysis.R to easily run the models
 - RESULTS.zip - a zipped folder with all the raw data; to replicate the parsing process, unpack and set the relevant path in analysis.R
+- examplegame.csv - full log of a single game as an example; all game data follows this format (see paper for details on how we analyze colexification in this)
+
