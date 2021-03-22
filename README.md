@@ -9,5 +9,5 @@ Code:
 
 Data:
 
-- parsed_results_for_glmm.txt - precompiled data (see paper for parsing details), load this in analysis.R to easily run the models
+- parsed_results_for_glmm.csv - precompiled tab-separated data (see paper for parsing details), load this in analysis.R to easily run the models
 - RESULTS.zip - a zipped folder with all the raw data; to replicate the parsing process, unpack and set the relevant path in analysis.R
