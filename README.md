@@ -1,5 +1,9 @@
 **Scripts and data to replicate the analyses in: Karjus et al 2021, "Conceptual similarity and communicative need shape colexification: an experimental study"**
 
+Preprint:
+
+- https://arxiv.org/abs/2103.11024
+
 Code:
 
 - All analyses were run on R version 4.0.3 (see expgen_scripts.R for package details)
