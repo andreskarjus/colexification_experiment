@@ -1,4 +1,4 @@
-**Scripts and data to replicate the analyses in: Karjus et al 2021, "Conceptual similarity and communicative need shape colexification: an experimental study"**
+**Scripts and data to replicate the analyses in:<br>Karjus et al 2021, "Conceptual similarity and communicative need shape colexification: an experimental study"**
 
 Preprint:
 
