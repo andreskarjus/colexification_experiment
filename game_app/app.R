@@ -1,7 +1,7 @@
 #######
 # The Espionage Game app used in Karjus et al 2021, 
 # "Conceptual similarity and communicative need shape colexification: an experimental study".
-# (c) Andres Karjus, 2020
+# (c) Andres Karjus, 2021
 #
 # This app is open source, but if you use this app or derivatives of it for your own research, do kindly notify the authors.
 #
