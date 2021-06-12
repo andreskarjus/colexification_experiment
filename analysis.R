@@ -322,28 +322,24 @@ ggplot(coinf, aes(Var1, Var2, label=value, color=col, size=col))+
 
 
 
+simus = gray_agent_simu()
+graypoints = gray_result_analyzer(simus)
+compdat = do_expmdat_fromfile("first", 0, "first_",bogus = c(15), accthreshold = 0, doinfandcompl = T)
 
-# Actual data + simulated space for discussion:
-compdat = do_expmdat_fromfile("first", 0, "first_",bogus = c(15), accthreshold = 0.59, doinfandcompl = T)
-
-ggplot(compdat %>% subset(condition!="xsimu") , aes(y=commcost, x=complexity, color=condition,fill=condition, shape=condition))+
-  geom_point(data=compdat %>% subset(condition=="xsimu"), color="gray94", size=8, shape=15)+
-  #geom_count(data=compdat %>% subset(condition=="baseline"), position=position_nudge(-0.01))+ 
-  #geom_count(data=compdat %>% subset(condition=="target"), position=position_nudge(+0.01))+ 
+ggplot(compdat %>% filter(acc>=0.59), aes(y=commcost, x=complexity, color=condition,fill=condition, shape=condition))+
+  geom_point(aes(y=commcost, x=complexity), data=graypoints, color="gray94", size=8, shape=15, inherit.aes = F)+
+  geom_point(aes(y=commcost, x=complexity), data=compdat %>% filter(acc<0.59), color="gray88",fill="gray88", size=2.3, shape=22, stroke=0, inherit.aes = F)+   # below threshold ones
   geom_count(stroke=1.3)+
-  #scale_discrete_manual(aesthetics = "stroke", values = c(`baseline` = 1, `target` = 100, `xsimu`=0))+
   scale_shape_manual(values=c(22,0), name="Condition:")+
-  scale_radius(  guide=F, range=c(1.5,13), limits = c(1,13))+
+  scale_radius(  guide=F, range=c(0.9,15), limits = c(1,13))+
   scale_color_manual(values=brewer_pal()(9)[c(5,8)], name="Condition:") +
   scale_fill_manual(values=brewer_pal()(9)[c(5,8, NA)], name="Condition:", guide=F) +
-  #coord_cartesian(expand=0)+
-  #scale_y_continuous( limits=c(0,2))+
-  scale_x_continuous(limits=c(0,2), expand=c(0.04,0.04))+
+  scale_x_continuous(limits=c(-0.05,2), expand=c(0.03,0))+
   labs(y=ytitle, x=xtitle)+
   annotate("text", x=0.1, y=-Inf,label="\u2039 simple\n\u2039 easier to learn", hjust=0, vjust=-0.2, size=4, color="gray40", lineheight=0.9)+
-  annotate("text", x=2, y=-Inf,  label="complex \u203A\n harder to learn \u203A", hjust=1, vjust=-0.2, size=4, color="gray40", lineheight=0.9)+
-  annotate("text", x=0.09, y=0.1,label="\u2039 expressive\n\u2039 informative", hjust=0, vjust=0, angle=90, size=4, color="gray40",lineheight=0.9)+
-  annotate("text", x=0.09, y=1.9,label="ambiguous \u203A\nerror-prone \u203A", hjust=1, vjust=0, angle=90, size=4, color="gray40", lineheight=0.9)+
+  annotate("text", x=Inf, y=-Inf,  label="complex \u203A\n harder to learn \u203A", hjust=1, vjust=-0.2, size=4, color="gray40", lineheight=0.9)+
+  annotate("text", x=-Inf, y=0.1,label="\u2039 expressive\n\u2039 informative", hjust=0, vjust=1.1, angle=90, size=4, color="gray40",lineheight=0.9)+
+  annotate("text", x=-Inf, y=1.7,label="ambiguous \u203A\nerror-prone \u203A", hjust=1, vjust=1.1, angle=90, size=4, color="gray40", lineheight=0.9)+
   guides(shape = guide_legend(override.aes = list(shape = c(22), fill=c(brewer_pal()(9)[c(5)], NA) )))+
   theme_minimal()+
   theme(legend.position = c(1,1),
@@ -369,6 +365,7 @@ ggplot(compdat %>% subset(condition!="xsimu") , aes(y=commcost, x=complexity, co
         #panel.spacing = unit(1, "lines")
   )  +
   NULL
+
 
 
 
