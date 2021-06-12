@@ -661,26 +661,26 @@ do_expmdat_binary4 = function(res,generated_stims, accthreshold, alsoburnin=F, d
     df = tibble()
     for(j in 1:nrow(x)){
       meaning = x$say[j]; signal = x$sent[j]; sender = x$sender[j]
-    
+      
       if(!doinfandcompl){
         last = tail(which(x$sender == sender & x$sent == signal & x$rown < j), 1)
         # only if colexification:
         if(length(last)==1 &&           # signal has been used before by same sender
-             meaning %in% stimtargets &&  # sent meaning is target in this stim set
-             x$say[last] != meaning       # but it's a colexification event
-             )
-            {                             # using && so it won't check others if false
-            a1 = x$say[last] == tarx2[meaning] # match against target pair member
-            a2 = ifelse(a1, "yes", "no")
-            d = tibble(colextarget  = a2,
-                       copair=x$say[last],
-                       meaning=meaning, 
-                       signal=signal,
-                       sender=x$sender[j], 
-                       row=x$rown[j]
-            )
-            df = rbind(df, d) 
-          }
+           meaning %in% stimtargets &&  # sent meaning is target in this stim set
+           x$say[last] != meaning       # but it's a colexification event
+        )
+        {                             # using && so it won't check others if false
+          a1 = x$say[last] == tarx2[meaning] # match against target pair member
+          a2 = ifelse(a1, "yes", "no")
+          d = tibble(colextarget  = a2,
+                     copair=x$say[last],
+                     meaning=meaning, 
+                     signal=signal,
+                     sender=x$sender[j], 
+                     row=x$rown[j]
+          )
+          df = rbind(df, d) 
+        }
       } # or:
       
       if(doinfandcompl){   # if doing the info-compl calc
@@ -698,16 +698,17 @@ do_expmdat_binary4 = function(res,generated_stims, accthreshold, alsoburnin=F, d
                        #sender=x$sender[j],
                        row=x$rown[j],
                        xpair=x$xpair[j]
+                       #acc=accs[i]
             )
             df2 = rbind(df2, d)
           }
         }
-         # old simplicity: if target xpair comes up, chech if other member last used same signal
-         #last = tail(which(x$sender == sender & x$say == tarx2[meaning] & x$rown < j), 1) # only other
-         #last = tail(which(x$sender == sender & x$xpair == x$xpair[j] & x$rown < j), 1) 
-         # get last meaning pair ref
-         # the irrelevalt distractor ones will na out, and which() will not match
-         #
+        # old simplicity: if target xpair comes up, chech if other member last used same signal
+        #last = tail(which(x$sender == sender & x$say == tarx2[meaning] & x$rown < j), 1) # only other
+        #last = tail(which(x$sender == sender & x$xpair == x$xpair[j] & x$rown < j), 1) 
+        # get last meaning pair ref
+        # the irrelevalt distractor ones will na out, and which() will not match
+        #
       }
     } # done with looping over 1 experiment
     
@@ -743,6 +744,7 @@ do_expmdat_binary4 = function(res,generated_stims, accthreshold, alsoburnin=F, d
       df2$condition = ifelse(x$isbaseline[1],"baseline", "target")
       df2$dyad = x$stimn[1]
       df2$sender = paste0(df2$dyad, "_",df2$sender)
+      df2$acc = accs[i]
       dat2[[i]] = df2
     }
     
@@ -751,7 +753,7 @@ do_expmdat_binary4 = function(res,generated_stims, accthreshold, alsoburnin=F, d
   if(!doinfandcompl){ 
     dat = do.call(rbind, dat) 
     dat$condition = as.factor(dat$condition)
-
+    
     dat$dyad = as.factor(dat$dyad)
     dat$sender = as.factor(dat$sender)
     dat$colextarget=as.factor(dat$colextarget)
@@ -763,60 +765,65 @@ do_expmdat_binary4 = function(res,generated_stims, accthreshold, alsoburnin=F, d
     dat$row2 = range01(dat$row, 68, 135)  # might as well do the rescale here; all experiments have same number of rounds so ok to hard-code. now centered at middle, so -1...1
     #
     return(dat)
-  #
+    #
   } else { 
     # if doing complexity posthoc, do other stuff
-    dat2 = do.call(rbind, dat2) 
+    dat2 = do.call(rbind, dat2)
     dat2$dyad = as.factor(dat2$dyad)
     
-    dat3 = dat2 %>% group_by(dyad, xpair) %>% 
-      summarise(dyad=first(dyad), xpair=first(xpair), 
-                          condition=first(condition), 
-                          commcost = mean(commcost), 
-                          complexity = mean(complexity)
-                ) %>% ungroup()
-    #return(dat3)
-    
-    ### simulate possible values
-    #meaning = rep(c(1,2,1, 2,1,2), 4)
-    tmp = permutations(3, 6, 1:3, F, T)
-    tmp = cbind(tmp, tmp, tmp, tmp)
-    n=ncol(tmp)
-    # add more random combos to fill out the space:
-    tmp2 = matrix(rep(rep(1, 24), 100), nrow=100)
-    tmp3 = matrix(rep(rep(1:2, 12), 100), nrow=100)
-    tmp4 = cbind(matrix(rep(rep(1, 12), 100), nrow=100), matrix(rep(rep(1:2, 6), 100), nrow=100)  )
-    tmp = rbind(tmp,
-                {tmp2[sample(ncol(tmp2)*nrow(tmp2), 100 )]=sample(2:3,100,T); tmp2},
-                {tmp3[sample(ncol(tmp3)*nrow(tmp3), 100 )]=sample(1:3,100,T); tmp3},
-                {tmp3[sample(ncol(tmp2)*nrow(tmp3), 100 )]=sample(1:10,100,T); tmp3},
-                {tmp3[sample(ncol(tmp3)*nrow(tmp3), 100 )]=sample(1:10,100,T); tmp3},
-                {tmp4[sample(ncol(tmp4)*nrow(tmp4), 100 )]=sample(1:2,100,T); tmp4},
-                {tmp4[sample(ncol(tmp4)*nrow(tmp4), 1000 )]=sample(1:2,1000,T); tmp4},
-                {tmp4[sample(ncol(tmp4)*nrow(tmp4), 100 )]=sample(1:10,100,T); tmp4},
-                {tmp[sample(ncol(tmp)*nrow(tmp), 100 )]=sample(1:3,100,T); tmp},
-                {tmp[sample(ncol(tmp)*nrow(tmp), 1000 )]=sample(1:3,1000,T); tmp},
-                {tmp[sample(ncol(tmp)*nrow(tmp), 5000 )]=sample(1:3,5000,T); tmp},
-                {tmp[sample(ncol(tmp)*nrow(tmp), 10000 )]=sample(1:3,10000,T); tmp},
-                matrix(sample(1:2, n*1000, T), nrow=1000, byrow = T),
-                matrix(sample(1:3, n*1000, T), nrow=1000, byrow = T),
-                matrix(1:(n*1000), nrow=1000, byrow = T)
-    )
-    dim(tmp)
-    
-    compl=commc=rep(NA, nrow(tmp))
-    for(i in 1:nrow(tmp)){                # self                             # other
-      compl[i] = mean((tmp[i, 3:n] != tmp[i, 1:(n-2)]) + (tmp[i, 3:n] != tmp[i, 2:(n-1)]))
-      commc[i] = mean((tmp[i, 3:n] != tmp[i, 1:(n-2)]) + (tmp[i, 3:n] == tmp[i, 2:(n-1)]))
-    }
-    tmp = data.frame(complexity=compl, commcost=commc, dyad=NA, xpair=".", condition="xsimu")
-    tmp = tmp[!duplicated(tmp),]
-    
-    dat4 = rbind(dat3, tmp)
-    
-    return(dat4) # return compl infor data plus simus
-    }
+    dat3 = dat2 %>% group_by(dyad, xpair) %>%
+      summarise(dyad=first(dyad), xpair=first(xpair),
+                condition=first(condition),
+                acc = first(acc),
+                commcost = mean(commcost),
+                complexity = mean(complexity)
+      ) %>% ungroup()
+    return(dat3)
+  }
+  #   
+  #   ### simulate possible values
+  #   #meaning = rep(c(1,2,1, 2,1,2), 4)
+  #   tmp = permutations(3, 6, 1:3, F, T)
+  #   tmp = cbind(tmp, tmp, tmp, tmp)
+  #   n=ncol(tmp)
+  #   # add more random combos to fill out the space:
+  #   tmp2 = matrix(rep(rep(1, 24), 100), nrow=100)
+  #   tmp3 = matrix(rep(rep(1:2, 12), 100), nrow=100)
+  #   tmp4 = cbind(matrix(rep(rep(1, 12), 100), nrow=100), matrix(rep(rep(1:2, 6), 100), nrow=100)  )
+  #   tmp = rbind(tmp,
+  #               {tmp2[sample(ncol(tmp2)*nrow(tmp2), 100 )]=sample(2:3,100,T); tmp2},
+  #               {tmp3[sample(ncol(tmp3)*nrow(tmp3), 100 )]=sample(1:3,100,T); tmp3},
+  #               {tmp3[sample(ncol(tmp2)*nrow(tmp3), 100 )]=sample(1:10,100,T); tmp3},
+  #               {tmp3[sample(ncol(tmp3)*nrow(tmp3), 100 )]=sample(1:10,100,T); tmp3},
+  #               {tmp4[sample(ncol(tmp4)*nrow(tmp4), 100 )]=sample(1:2,100,T); tmp4},
+  #               {tmp4[sample(ncol(tmp4)*nrow(tmp4), 1000 )]=sample(1:2,1000,T); tmp4},
+  #               {tmp4[sample(ncol(tmp4)*nrow(tmp4), 100 )]=sample(1:10,100,T); tmp4},
+  #               {tmp[sample(ncol(tmp)*nrow(tmp), 100 )]=sample(1:3,100,T); tmp},
+  #               {tmp[sample(ncol(tmp)*nrow(tmp), 1000 )]=sample(1:3,1000,T); tmp},
+  #               {tmp[sample(ncol(tmp)*nrow(tmp), 5000 )]=sample(1:3,5000,T); tmp},
+  #               {tmp[sample(ncol(tmp)*nrow(tmp), 10000 )]=sample(1:3,10000,T); tmp},
+  #               matrix(sample(1:2, n*1000, T), nrow=1000, byrow = T),
+  #               matrix(sample(1:3, n*1000, T), nrow=1000, byrow = T),
+  #               matrix(1:(n*1000), nrow=1000, byrow = T)
+  #   )
+  #   dim(tmp)
+  #   
+  #   compl=commc=rep(NA, nrow(tmp))
+  #   for(i in 1:nrow(tmp)){                # self                             # other
+  #     compl[i] = mean((tmp[i, 3:n] != tmp[i, 1:(n-2)]) + (tmp[i, 3:n] != tmp[i, 2:(n-1)]))
+  #     commc[i] = mean((tmp[i, 3:n] != tmp[i, 1:(n-2)]) + (tmp[i, 3:n] == tmp[i, 2:(n-1)]))
+  #   }
+  #   tmp = data.frame(complexity=compl, commcost=commc, dyad=NA, xpair=".", condition="xsimu")
+  #   tmp = tmp[!duplicated(tmp),]
+  #   
+  # dat4 = rbind(dat3, tmp)
+  # return(dat4) # return compl infor data plus simus
+  # }
   
+  # ggplot(dat3, aes(y=commcost, x=complexity, color=condition, label=paste(dyad,xpair)))+geom_text()
+  # plotpilot(res[[9]],generated_stims, F, F,11 )
+  # dat2 %>% filter(dyad=="9") %>%  group_by(xpair) %>% summarise(commcost = mean(commcost)/2, complexity = mean(complexity)/2)
+  # res[[9]] %>%  filter(say %in% c("coast", "shore"))
 }
 
 # current one, calls do_expmdat_binary4
@@ -878,4 +885,213 @@ do_expmdat_fromfile = function(
 
 
 range01 <- function(x,mn,mx){(x-mn)/(mx-mn)}
+
+
+#### simulation for the gray blobs ####
+
+
+
+# rational and intentionally misleading agents
+lawful_agent = function(j=NULL,i=NULL, alignment="good"){
+  tmpl = matrix(0.1, 10, 7) # +1 to avoid /0
+  x = data.frame(say = sample(rep(1:10, each=14))[1:135], 
+                 sent=c(sample(1:j,1), rep(NA,134)), 
+                 rown=1:135, dyad=paste(j,i,alignment, sep="_"))
+  tmpl[x$say[1], x$sent[1]]=1.1
+  if(alignment=="good"){
+    for(i in 2:135){
+      m = (tmpl[ x$say[i], 1:j] / colSums(tmpl[, 1:j]))
+      mm = sample(which(m==max(m)),1) # if multiple fit, just pick one
+      tmpl[x$say[i], mm] = round(tmpl[x$say[i], mm]+1,5) # round to avoid fl point errors
+      x$sent[i] = mm
+    }
+  }
+  
+  if(alignment=="good2"){
+    for(i in 2:135){
+      m = (tmpl[ x$say[i], 1:j] / colSums(tmpl[,1:j]))
+      mm = sample(which(m==max(m)),1) # if multiple fit, just pick one
+      tmpl[x$say[i], -mm] = 0.1
+      tmpl[x$say[i], mm] = round(tmpl[x$say[i], mm]+1,5) # round to avoid fl point errors
+      x$sent[i] = mm
+    }
+  }
+  if(alignment=="evil"){  # intentionally misleading
+    for(i in 2:135){
+      m = (tmpl[ x$say[i], 1:j] / colSums(tmpl[,1:j]))
+      mm = sample(which(m==min(m)),1) # gamechanger
+      tmpl[x$say[i], mm] = round(tmpl[x$say[i], mm]+1,5) # round to avoid fl point errors
+      x$sent[i] = mm
+    }
+  }
+  if(alignment=="evil2"){  # intentionally misleading
+    for(i in 2:135){
+      m = (tmpl[ x$say[i], 1:j] / colSums(tmpl[,1:j]))
+      mm = sample(which(m==min(m)),1) # gamechanger
+      tmpl[x$say[i], -mm] = 0.1
+      tmpl[x$say[i], mm] = round(tmpl[x$say[i], mm]+1,5) # round to avoid fl point errors
+      x$sent[i] = mm
+    }
+  }
+  # tmpl %>% reshape2::melt() %>% mutate(value=na_if(value,0.1)) %>% ggplot(aes(Var1, Var2, fill=value))+geom_tile()
+  table(x$say, x$sent) %>% reshape2::melt() %>% mutate(value=na_if(value,0.1)) %>% ggplot(aes(Var1, Var2, fill=value))+geom_tile()
+  return(x)
+}
+
+
+gray_agent_simu = function(nrep=20){
+  print(Sys.time())
+  simus = list()
+  ii=1
+  
+  x = data.frame(say = sample(rep(1:10, each=14))[1:135], sent=1, rown=1:135, dyad="d1") # degenerate case, no variation, neutral evil
+  simus[[ii]] = x
+  ii=ii+1
+  
+  # degen + some random to smooth out plot
+  for(i in seq(5,40,5)){
+    x = data.frame(say = sample(rep(1:10, each=14))[1:135], sent=1, rown=1:135, dyad=paste(1,i,"d", sep="_")) 
+    ns=round(i/135*100)
+    x$sent[sample(1:135, ns)] = sample(1:7, ns, T)
+    simus[[ii]] = x
+    ii=ii+1
+  }
+ 
+  # randos to "fill the gaps" in the space between the strategies below; chaotic neutral/neutral evil
+  for(i in 1:(nrep*3) ){  # replications
+    for(j in 2:7){
+      x=data.frame(say = sample(rep(1:10, each=14))[1:135], 
+                   sent=sample(1:j,135, T), rown=1:135, 
+                   dyad=paste(j,i,"r", sep="_"))
+      simus[[ii]] = x
+      ii=ii+1
+    }
+  }
+  
+  # strict matching, randoms for gaps; chaotic neutral
+  for(i in 1:nrep){  # replications
+    for(j in 2:7){
+      x = data.frame(say = sample(rep(1:10, each=14))[1:135], 
+                     sent=NA, rown=1:135, dyad=paste(j,i,"s", sep="_"))
+      x$sent = ifelse(x$say <= j, x$say, sample(1:j, 135, T))  # 1 to 1 lexification, otherwise random
+      if(i %% 2 ==0 ){  # add some variation by adding noise to half of them
+        ns = ((i/nrep*40+20))
+        x$sent[sample(40:135, ns)] = sample(1:7, ns, T)
+      }
+      simus[[ii]] = x
+      ii=ii+1
+    }
+  }
+  
+  
+  # strict matching but colexifies, random for gaps; chaotic good 
+  cotmp = c(1,1,2,2,3,3,4,5,6,7)
+  for(i in 1:nrep){  
+    for(j in 2:7){
+      x = data.frame(say = sample(rep(1:10, each=14))[1:135], 
+                     sent=NA, rown=1:135, dyad=paste(j,i,"sc", sep="_"))
+      # 1 to 1 lexification, otherwise random
+      x$sent = ifelse(x$say <= (j*2) & j<=3 | x$say <= (6+(j-3)) & j>=4, cotmp[x$say], 
+                      sample(1:j, 135, T))  
+      simus[[ii]] = x
+      ii=ii+1
+    }
+  }
+  # strict matching but colexifies, trimmed randoms for gaps; neutral good
+  for(i in 1:nrep){ 
+    for(j in 4:7){
+      x = data.frame(say = sample(rep(1:10, each=14))[1:135], 
+                     sent=NA, rown=1:135, dyad=paste(j,i,"scr", sep="_"))
+      x$sent = ifelse( x$say <= (6+(j-3)) , cotmp[x$say], 
+                       sample(4:j, 135, T))  
+      if(i %% 2 ==0 ){  # add some noise by degenererating half of them
+        ns = (135-(i/nrep*50+20))
+        x$sent[ns:135] = 1
+      }
+      simus[[ii]] = x
+      ii=ii+1
+    }
+  }
+  
+  # lawful/rational good and lawful evil (misleading) agents:
+  for(i in 1:nrep){  # replications
+    for(j in 2:7){
+      x = lawful_agent(j,i,"good")
+      simus[[ii]] = x
+      ii=ii+1
+      x = lawful_agent(j,i,"good2")
+      simus[[ii]] = x
+      ii=ii+1
+      # add random degeneration and random behaviour to smooth out plot a bit
+      x$dyad = paste(j,i,"dgood2") 
+      x2 = x
+      x2$sent[(135-(i/nrep*50+20)) :135]=1
+      simus[[ii]] = x2
+      ii=ii+1
+      
+      x$dyad = paste(j,i,"rgood2") 
+      x2 = x
+      ns = (135-(i/nrep*50+20))
+      x2$sent[ns:135]=sample(1:7,length(ns:135),T)
+      simus[[ii]] = x2
+      ii=ii+1
+      
+      x = lawful_agent(j,i,"evil")
+      simus[[ii]] = x
+      ii=ii+1
+      x = lawful_agent(j,i,"evil2")
+      simus[[ii]] = x
+      ii=ii+1
+    }
+  }
+  return(simus)
+}
+
+
+gray_result_analyzer = function(simus){
+  print(Sys.time())
+  dfs=vector("list", length(simus))
+  for(i in 1:length(simus)){
+    #print(i)
+    x = simus[[i]]
+    df2=tibble()
+    # randomly decide which were supposed to be agent's "similar" meaning pairs
+    if(runif(1) <= 0.5){
+      prs = c(4:6, 1:3) # "target condition" type for some agent strategies
+    } else {
+      prs = c(NA,NA,NA,NA,8,9,10, 5,6,7) # sort of "baseline condition" for some
+    }
+    x$xpair = as.character(pmin(x$say, prs[x$say]))
+    for(j in 45:135){
+      meaning=x$say[j]
+      signal =x$sent[j]
+      if(meaning %in% prs){ 
+        lastself  = tail(which(x$say == meaning & x$rown < j), 1) 
+        lastother = tail(which(x$say == prs[meaning] & x$rown < j), 1) 
+        if(length(lastself)==1 & length(lastother)==1){ # if meaning and pairmeaning have been used
+          comp = ((x$sent[lastself] != signal)+(x$sent[lastother] != signal)) # plus complexity
+          cost = ((x$sent[lastself] != signal)+(x$sent[lastother] == signal)) # plus comm.cost
+          d = tibble(complexity  = comp,
+                     commcost = cost,
+                     meaning=meaning,
+                     signal=signal,
+                     xpair=x$xpair[j],
+                     dyad=x$dyad[1]
+          )
+          df2 = rbind(df2, d)
+        }
+      }
+    }
+    dfs[[i]] = df2 %>% group_by(xpair) %>% 
+      summarise(dyad=first(dyad), xpair=first(xpair), 
+                commcost = round(mean(commcost),4),  # don't need ~overlapping so filter
+                complexity = round(mean(complexity),4)
+                )
+  }
+  dfs = do.call(rbind, dfs)
+  dfs2 = dfs[!duplicated(dfs %>% ungroup() %>%  select(commcost, complexity)), ]
+  print(paste(Sys.time(), nrow(dfs), "parsed", nrow(dfs2), "unique" ))
+  return(dfs2)
+}
+
 
