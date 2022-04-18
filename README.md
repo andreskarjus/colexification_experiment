@@ -1,8 +1,4 @@
-**Scripts and data to replicate the analyses in:<br>Karjus et al 2021, "Conceptual similarity and communicative need shape colexification: an experimental study"**
-
-Preprint:
-
-- https://arxiv.org/abs/2103.11024
+**Scripts and data to replicate the analyses in:<br>Karjus, A., Blythe, R.A., Kirby, S., Wang, T. and Smith, K. (2021), Conceptual Similarity and Communicative Need Shape Colexification: An Experimental Study.** Cognitive Science, 45: e13035. https://doi.org/10.1111/cogs.13035
 
 Code:
 
@@ -17,4 +13,5 @@ Data:
 - parsed_results_for_glmm.csv - precompiled tab-separated data (see paper for parsing details), load this in analysis.R to easily run the models
 - RESULTS.zip - a zipped folder with all the raw data; to replicate the parsing process, unpack and set the relevant path in analysis.R
 - examplegame.csv - full log of a single game as an easily accessible example; all game data follows this format (see paper for details on how we analyze colexification in this)
+- Two external datasets are used: [Simlex999](https://fh295.github.io/simlex.html) word similarity scores and Fasttext English word embeddings [https://fasttext.cc/](Fasttext) (see paper for details)
 
